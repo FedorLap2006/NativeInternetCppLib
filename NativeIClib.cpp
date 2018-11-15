@@ -36,9 +36,9 @@ lpstrI Inet::RecvM(SOCKET lsock,size_t countinfo,bool &CRecv){
 // Server
 
 
-Server::Server(lint IP,lint PORT,lint TypeSock){
+Server::Server(lpstrI IP,lint PORT,lint TypeSock){
 	this->serverAddr.sin_family=AF_INET;
-	this->serverAddr.sa_data=htonl(IP);
+	this->serverAddr.sa_data=inet_addr(IP);
 	this->serverAddr.sin_port=PORT;
 	
 	this->mainSock=socket(AF_INET,TypeSock,protocol);
@@ -64,7 +64,7 @@ void Server::DisConnectS(){
 
 Client::Client(lint IP,lint PORT,lint TypeSock){
 	this->serverSockAddr.sin_family=AF_INET;
-	this->serverSockAddr.sa_data=htonl(IP);
+	this->serverSockAddr.sa_data=inet_addr(IP);
 	this->serverSockAddr.sin_port=PORT;
 	
 	this->mainSock=socket(AF_INET,TypeSock,protocol);
