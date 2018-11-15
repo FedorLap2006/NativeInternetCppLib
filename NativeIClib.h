@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <winSock2.h>
 #include <windows.h>
 #include <string>
@@ -21,7 +22,7 @@ bool StartupLib();
 
 class Inet{
 	protected:
-		lint IP;
+		lpstrI IP;
 		lint PORT;
 		HSOCK mainSock;
 		int protocol;
@@ -37,7 +38,7 @@ class Server : public Inet{
 		SOCKADDR_IN serverAddr;
 	public:
 		bool errorinit=false;
-		Server(lint IP,lint PORT=DEF_NOUSED_PORT,lint TypeSock);
+		Server(lpstrI IP,lint PORT=DEF_NOUSED_PORT,lint TypeSock);
 		bool ConnectS();
 		void DisConnectS();
 };
@@ -46,7 +47,7 @@ class Client : public Inet{
 	private:
 		SOCKADDR_IN serverSockAddr;
 	public:
-		Client(lint IP,lint PORT=DEF_NOUSED_PORT,lint TypeSock);
+		Client(lpstrI IP,lint PORT=DEF_NOUSED_PORT,lint TypeSock);
 		bool ConnectC();
 		void DisConnectC();
 };
