@@ -4,6 +4,8 @@
 #include <winSock2.h>
 #include <windows.h>
 #include <string>
+#include <thread>
+#include <mutex>
 
 using namespace std;
 
@@ -12,13 +14,16 @@ using namespace std;
 
 #define DEF_NOUSED_PORT 585
 
+
+
+
 typedef long int lint;
 typedef unsigned int uint;
 typedef long unsigned int luint;
-typedef char* lpstrI;
+typedef char* lpstr;
+typedef const char* cplstr;
 typedef SOCKET HSOCK;
 
-bool StartupLib();
 
 class Inet{
 	protected:
@@ -26,30 +31,38 @@ class Inet{
 		lint PORT;
 		HSOCK mainSock;
 		int protocol;
-		bool bootcheck;
+		bool isAvaible=true;
 	public:
-		bool SendM(size_t countinfo,lpstrI info);
-		lpstrI RecvM(size_t countinfo,bool &CRecv);
-};
-
-class Server : public Inet{
-	private:
-		HSOCK recvsock;
-		SOCKADDR_IN serverAddr;
-	public:
-		bool errorinit=false;
-		Server(lpstrI IP,lint PORT=DEF_NOUSED_PORT,lint TypeSock);
-		bool ConnectS();
-		void DisConnectS();
+		virtual void Send(string &sender);
+		virtual void Recv(string &reader);
+		bool getAvaible(){return isAvaible;}
 };
 
 class Client : public Inet{
 	private:
-		SOCKADDR_IN serverSockAddr;
+		struct sockaddr_in saddr;
 	public:
-		Client(lpstrI IP,lint PORT=DEF_NOUSED_PORT,lint TypeSock);
-		bool ConnectC();
-		void DisConnectC();
+		Client(string ip,int port);
+		~Client(){WSACleanup();if(isAvaible){closeSocket(mainSock);isAvaible=false;}}
+		
+		void Close(){if(isAvaible){closeSocket(mainSock); isAvaible=false;}}
+		void Connect(){if(isAvaible){if(connect(mainSock,saddr,sizeof(saddr)) < 0) isAvaible=false;}}
+};
+
+class Server : public Inet{
+	private:
+		struct sockaddr_in sbindaddr;
+		bool isThreads=false;
+		bool readInitcheck=false;
+	public:
+		void ReadInit();
+		Server(string ip,int port,bool threads);
+		~Server(){WSACleanup();if(isAvaible){closeSocket(mainSock);isAvaible=false;}}
+		void Send(string &sender) override;
+		void Recv(string &reader) override;
+
+		void Close(){if(isAvaible){closeSocket(mainSock); isAvaible=false;}}
+		void Connect(){if(isAvaible){if(connect(mainSock,saddr,sizeof(saddr)) < 0) isAvaible=false;}}
 };
 
 
