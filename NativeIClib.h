@@ -33,8 +33,8 @@ class Inet{
 		int protocol;
 		bool isAvaible=true;
 	public:
-		virtual void Send(string &sender);
-		virtual void Recv(string &reader);
+		virtual int Send(string &sender);
+		virtual int Recv(string &reader,size_t size);
 		bool getAvaible(){return isAvaible;}
 };
 
@@ -52,14 +52,15 @@ class Client : public Inet{
 class Server : public Inet{
 	private:
 		struct sockaddr_in sbindaddr;
+		HSOCK haccept;
 		bool isThreads=false;
 		bool readInitcheck=false;
 	public:
-		void ReadInit();
+		void ReadInit(){haccept=accept(mainSock,NULL,NULL);}
 		Server(string ip,int port,bool threads);
 		~Server(){WSACleanup();if(isAvaible){closeSocket(mainSock);isAvaible=false;}}
-		void Send(string &sender) override;
-		void Recv(string &reader) override;
+		// int Send(string &sender) override;
+		int Recv(string &reader,size_t size) override;
 
 		void Close(){if(isAvaible){closeSocket(mainSock); isAvaible=false;}}
 		void Connect(){if(isAvaible){if(connect(mainSock,saddr,sizeof(saddr)) < 0) isAvaible=false;}}
